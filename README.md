@@ -1,5 +1,5 @@
-Dropwizard cookie-based flash scope
-===================================
+# Dropwizard cookie-based flash scope
+
 
 A flash scope for Dropwizard that avoids the need for any server-side state. Useful when you're running multiple nodes
 but don't want the complexity of sticky sessions or an external session store.
@@ -8,8 +8,8 @@ Note: the flash cookie is not encrypted or signed in anyway, so don't use it to 
 where a user modifying the contents of the cookie might cause problems.
 
 
-Adding to your application
---------------------------
+## Adding to your application
+
 If you're happy for the flash scope cookie to be created with the default configuration, add this to your Application
 class:
 
