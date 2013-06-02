@@ -1,0 +1,9 @@
+.idea
+target
+logs
+*.iml
+*.ipr
+#Eclipse-specific
+.settings/
+.classpath
+.project
