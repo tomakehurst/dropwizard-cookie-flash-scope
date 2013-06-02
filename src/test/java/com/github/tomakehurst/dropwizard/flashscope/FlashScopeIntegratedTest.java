@@ -8,8 +8,10 @@ import com.codahale.dropwizard.setup.Bootstrap;
 import com.codahale.dropwizard.setup.Environment;
 import com.codahale.dropwizard.testing.junit.DropwizardAppRule;
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.sun.jersey.api.client.Client;
@@ -91,26 +93,39 @@ public class FlashScopeIntegratedTest {
 
         @Path("action")
         @POST
-        public Response doSomething(@FlashScope com.github.tomakehurst.dropwizard.flashscope.Flash flash, @FormParam("message") String message) {
-            flash.set(ImmutableMap.of("message", message));
+        public Response doSomething(@FlashScope Flash flash, @FormParam("message") String message) {
+            flash.set(new FlashMessage(message));
             return Response.seeOther(URI.create("/result")).build();
         }
 
         @Path("result")
         @GET
         @Produces("text/plain")
-        public String getResult(@FlashScope com.github.tomakehurst.dropwizard.flashscope.Flash flash) {
-            Map<String, String> contents = flash.get(Map.class).get();
-            return contents.get("message");
+        public String getResult(@FlashScope Flash flash) {
+            Optional<FlashMessage> contents = flash.get(FlashMessage.class);
+            return (contents.or(new FlashMessage("OK"))).getMessage();
         }
 
         @Path("action-no-redirect")
         @POST
-        public Response putSomethingInTheFlash(@FlashScope com.github.tomakehurst.dropwizard.flashscope.Flash flash) {
+        public Response putSomethingInTheFlash(@FlashScope Flash flash) {
             flash.set(ImmutableMap.of("something", "anything"));
             return Response.ok().build();
         }
+    }
 
+    public static class FlashMessage {
+
+        private final String message;
+
+        @JsonCreator
+        public FlashMessage(@JsonProperty("message") String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 
     public static class TestConfig extends Configuration {
