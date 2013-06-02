@@ -76,7 +76,7 @@ public Response doSomething(@FlashScope Flash flash, @FormParam("message") Strin
     return Response.seeOther(URI.create("/result")).build();
 }
 
-@Path("result")
+@Path("/result")
 @GET
 @Produces("text/plain")
 public String getResult(@FlashScope Flash flash) {
